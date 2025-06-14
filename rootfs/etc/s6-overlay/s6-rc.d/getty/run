@@ -1,0 +1,2 @@
+#!/command/execlineb -P
+exec getty -L -n -l /bin/bash 38400 console linux

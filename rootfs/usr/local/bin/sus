@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Default directory
+DIR="/usr/local/etc/sus.d"
+
+# Check if a directory is provided as an argument
+if [ -n "$1" ]; then
+    DIR="$1"
+fi
+
+# Ensure the directory exists
+if [ ! -d "$DIR" ]; then
+    echo "Directory not found: $DIR"
+    exit 1
+fi
+
+# Run all scripts in the directory in alphabetical order
+for SCRIPT in $(ls "$DIR" | sort); do
+    if [ -x "$DIR/$SCRIPT" ]; then
+        echo "[sus: Running $SCRIPT...]"
+        "$DIR/$SCRIPT"
+    fi
+done
+

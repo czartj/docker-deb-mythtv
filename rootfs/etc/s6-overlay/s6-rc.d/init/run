@@ -1,0 +1,3 @@
+#!/command/with-contenv sh
+##!/command/execlineb -P
+exec /usr/local/etc/init.sh
