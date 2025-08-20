@@ -1,6 +1,6 @@
 # docker-deb-mythtv
 
-A MythTV backend docker image built with: Debian slim, s6-overlay & Debian Multimedia Packages
+A MythTV backend (v35.0) docker image built with: Debian trixie-slim, s6-overlay & Debian Multimedia Packages
 <br>
 
 Uses the **Environment variables** to configure the connection to the database:
@@ -11,6 +11,13 @@ Uses the **Environment variables** to configure the connection to the database:
     MYTH_DATABASE_USER
     MYTH_DATABASE_PASSWORD
     MYTH_DATABASE_NAME
+
+<br>
+
+Extra **Environment variables** to set user/group (defaults to 1111/1111) ownership:
+
+    PUID
+    PGID
 
 An example use:
 

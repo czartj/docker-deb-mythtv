@@ -41,6 +41,7 @@ if [ -n ${MYTH_DATABASE_PORT} ]; then
     xmlstarlet ed -L -u "/Configuration/Database/Port" -v "$MYTH_DATABASE_PORT" /tmp/config.xml
 fi
 
+cp /tmp/config.xml /etc/mythtv/
 mv /tmp/config.xml /home/mythtv/.mythtv
 
 

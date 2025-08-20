@@ -1,16 +1,10 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 ARG S6_OVERLAY_VERSION=3.2.1.0
 
-#ENV MYTH_DATABASE_HOST=odh2p
-#ENV MYTH_DATABASE_USER=mythtv35
-#ENV MYTH_DATABASE_PASSWORD=mythtv35
-#ENV MYTH_DATABASE_NAME=mythconverg35
-#ENV MYTH_DATABASE_PORT=3306
-
-ENV TERM=xterm
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US:en
-ENV LC_ALL=en_US.UTF-8
+#ENV TERM=xterm
+#ENV LANG=en_US.UTF-8
+#ENV LANGUAGE=en_US:en
+#ENV LC_ALL=en_US.UTF-8
 
 COPY build/ /tmp/build
 RUN /tmp/build/setup.sh
@@ -18,7 +12,7 @@ RUN /tmp/build/setup.sh
 RUN \
     apt-get update && \
     apt-get upgrade -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends -t stable-backports mythtv-backend xmlstarlet
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mythtv-backend xmlstarlet
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
