@@ -21,6 +21,13 @@ apt-get update && apt-get dist-upgrade -y && apt-get install -y \
 #Add 'mythtv' user & group
 groupadd -rg 1111 mythtv && useradd -ru 1111 -md /home/mythtv -g mythtv mythtv && usermod -aG sudo mythtv
 
+# for '/usr/share/mythtv/mythconverg_backup.pl' to work without TLS/SSL...
+cat << EOF > /home/mythtv/.my.cnf
+[client]
+skip-ssl = true
+EOF
+chown mythtv:mythtv /home/mythtv/.my.cnf
+
 wget https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
 dpkg -i deb-multimedia-keyring_2024.9.1_all.deb
 cat << EOF > /etc/apt/sources.list.d/dmo.sources
