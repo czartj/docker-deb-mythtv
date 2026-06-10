@@ -41,12 +41,20 @@ docker run --name mythbackend \
 
 For testing I use this docker-compose.yml:
 ```
-
 version: "3"
 
 services:
+  init-dvr:
+    image: busybox
+    container_name: mythtvt_init
+    user: root
+    volumes:
+      - mythtvt_dvr:/dvr
+    command: sh -c "mkdir -p /dvr/mythtv && chown 1111:1111 /dvr/mythtv"
+
   mythtvt:
-    image: czartj/docker-deb-mythtv:latest
+#    image: czartj/docker-deb-mythtv:latest
+    image: czartj/docker-deb-mythtv-mythweb:latest
     container_name: mythtvt
     hostname: mythtvt
     networks:
@@ -60,9 +68,14 @@ services:
       - MYTH_DATABASE_NAME=mythconverg
       - MYTH_WEB_PORT=80 # for testing with image: czartj/docker-deb-mythtv-mythweb:latest
     volumes:
-      - ./xmltv:/xmltv:z # used for guide data testing
-      - /etc/localtime:/etc/localtime
-      - /srv/nfs/mythtv/dvr1/mythtv_t1/:/srv/nfs/mythtv/dvr1/mythtv_t1/ # tmp recordings
+      - mythtvt_xmltv:/xmltv:z # used for guide data testing
+      - /etc/localtime:/etc/localtime:ro
+      - mythtvt_dvr:/dvr
+    restart: unless-stopped
+    depends_on:
+      init-dvr:
+        condition: service_completed_successfully
+
 
   mariadb:
     image: mariadb:latest
@@ -72,11 +85,15 @@ services:
       - MYSQL_DATABASE=mythconverg
       - MYSQL_USER=mythtv
       - MYSQL_PASSWORD=mythtv
+      - TZ=${TZ:-America/Chicago}
     volumes:
-      - ./mysql/:/var/lib/mysql:z
+      - mythtvt_mysql:/var/lib/mysql:z
+      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     networks:
       macvlan:
         ipv4_address: 192.168.3.11
+    restart: unless-stopped
 
 networks:
   macvlan:
@@ -88,6 +105,11 @@ networks:
       config:
         - subnet: 192.168.3.0/24
           gateway: 192.168.3.1
+
+volumes:
+  mythtvt_mysql:
+  mythtvt_xmltv:
+  mythtvt_dvr:
 
 ```
 I allows me to test it on the same machine as the existing installation, but in a separate network space.  The web-setup should be available at http://192.168.3.10:6544 from another machine on the same network. If you need to test it on the same host you must create a macvlan to bridge to the hosts physical NIC to get around the 'macvlan' bridge/private mode.
