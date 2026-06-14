@@ -1,2 +1,11 @@
-#!/command/execlineb -P
-exec mythbackend --user mythtv
+#!/command/with-contenv sh
+
+read cstart hstart range < /proc/self/uid_map 2>/dev/null
+if [ "$hstart" != "0" ]
+then
+    echo "Starting: ROOTLESS..."
+    mythbackend
+else
+    echo "Starting: ROOTFUL!!!"
+    mythbackend --user mythtv
+fi

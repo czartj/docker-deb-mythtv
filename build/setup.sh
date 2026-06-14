@@ -26,6 +26,11 @@ cat << EOF > /home/mythtv/.my.cnf
 [client]
 skip-ssl = true
 EOF
+
+# needed if running rootless, running as root, but not...
+cp /home/mythtv/.my.cnf /root/
+ln -s /home/mythtv/.mythtv /root/.mythtv
+
 chown mythtv:mythtv /home/mythtv/.my.cnf
 
 wget https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
