@@ -1,11 +1,13 @@
 #!/command/with-contenv sh
 
+echo "MYTH_PARAMS: "${MYTH_PARAMS}
+
 read cstart hstart range < /proc/self/uid_map 2>/dev/null
 if [ "$hstart" != "0" ]
 then
     echo "Starting: ROOTLESS..."
-    mythbackend
+    mythbackend ${MYTH_PARAMS}
 else
     echo "Starting: ROOTFUL!!!"
-    mythbackend --user mythtv
+    mythbackend --user mythtv ${MYTH_PARAMS}
 fi
