@@ -14,10 +14,14 @@ Uses the **Environment variables** to configure the connection to the database:
 
 <br>
 
-Extra **Environment variables** to set user/group (defaults to 1111/1111) ownership:
+Extra **Environment variables** to set user/group (defaults to 1111/1111, not used for rootless) ownership:
 
     PUID
     PGID
+
+And for mythbackend options:
+
+    MYTH_PARAMS
 
 An example use:
 
@@ -100,4 +104,49 @@ ip addr add 192.168.3.254/24 dev macvlan0
 
 # 3️⃣ Bring the interface up
 ip link set macvlan0 up
+```
+
+<br>
+
+Another way for testing, while not in confict (differnt ports) with my running backend, I use this docker-compose.yml:
+```
+version: "3"
+
+services:
+  mythtv_test:
+    image: czartj/docker-deb-mythtv:latest
+    container_name: mythtv_test
+    network_mode: host
+    environment:
+      - MYTH_DATABASE_HOST=127.0.0.1
+      - MYTH_DATABASE_PORT=3310
+      - MYTH_DATABASE_USER=mythtv
+      - MYTH_DATABASE_PASSWORD=mythtv
+      - MYTH_DATABASE_NAME=mythconverg
+      - MYTH_WEB_PORT=18044 # for testing with image: czartj/docker-deb-mythtv-mythweb:latest
+      - MYTH_PARAMS=-O BackendStatusPort=16544  -O BackendServerPort=16543  # alt ports to avoid confict
+    volumes:
+      - shared-syncthing:/shared
+      - /etc/localtime:/etc/localtime:ro
+      - ./dvr:/srv/nfs/mythtv/dvr0
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=msrootpassword
+      - MYSQL_DATABASE=mythconverg
+      - MYSQL_USER=mythtv
+      - MYSQL_PASSWORD=mythtv
+      - TZ=America/Chicago # needed if using time options in schedules
+    volumes:
+      - mysql:/var/lib/mysql:z
+    ports:
+      - 3310:3306
+volumes:
+  mysql:
+  shared-syncthing:
+    external: true          # <-- tells compose not to create a new volume
+    name: shared-syncthing
 ```
